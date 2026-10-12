@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#175cd3">
+<link rel="manifest" href="manifest.json">
+<meta name="description" content="An offline-friendly daily planner, money tracker, school organizer, notebook, reminders, voice input and AI helper.">
+<title>My Daily Helper</title>
+<style>
+:root{--blue:#175cd3;--navy:#102a56;--bg:#f3f6fb;--card:#fff;--text:#172b4d;--muted:#68778d;--line:#e3eaf4;--green:#12805c;--orange:#f59e0b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:linear-gradient(135deg,#175cd3,#4b82f0);color:#fff;padding:24px 18px 28px;border-radius:0 0 25px 25px}
+.wrap{max-width:960px;margin:auto;padding:0 14px}header .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.logo{font-weight:800;font-size:1.1rem;letter-spacing:.2px}.badge{font-size:.78rem;background:#ffffff2a;padding:6px 10px;border-radius:20px}
+h1{font-size:1.85rem;line-height:1.15;margin:20px 0 8px}header p{margin:0;opacity:.93;max-width:550px}
+main{max-width:960px;margin:-12px auto 30px;padding:0 14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.stat,.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 5px 18px #163c7210}
+.stat{padding:13px}.stat small{display:block;color:var(--muted);font-size:.8rem}.stat strong{font-size:1.35rem}
+.nav{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;scrollbar-width:thin}.nav button{white-space:nowrap;border:1px solid var(--line);background:#fff;color:var(--text);border-radius:24px;padding:10px 14px;font-weight:650;cursor:pointer}.nav button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.panel{display:none}.panel.active{display:block}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{padding:17px;margin-bottom:14px}.card h2{margin:0 0 5px;font-size:1.12rem}.sub{color:var(--muted);font-size:.9rem;margin:0 0 14px}
+label{display:block;font-weight:650;font-size:.9rem;margin:10px 0 5px}input,select,textarea{width:100%;border:1px solid #ced8e6;border-radius:10px;padding:11px 12px;font:inherit;background:#fff;color:var(--text)}textarea{min-height:95px;resize:vertical}
+button.primary,button.secondary,button.danger{border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;margin-top:10px}.primary{background:var(--blue);color:white}.secondary{background:#eaf1ff;color:var(--blue)}.danger{background:#fff0f0;color:#b42318}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}.list{margin-top:12px}.item{padding:11px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}.item:last-child{border-bottom:0}.item .content{flex:1;min-width:0;overflow-wrap:anywhere}.item small{display:block;color:var(--muted)}.item.done .content{text-decoration:line-through;color:var(--muted)}.item input[type=checkbox]{width:18px;margin-top:5px}.empty{color:var(--muted);font-size:.92rem;padding:10px 0}.money{font-size:1.6rem;font-weight:800}.good{color:var(--green)}.bad{color:#b42318}.tip{background:#eef5ff;border-left:4px solid var(--blue);padding:12px;border-radius:8px;font-size:.92rem}.chatbox{background:#f6f8fc;border:1px solid var(--line);border-radius:12px;padding:13px;white-space:pre-wrap;min-height:72px}.foot{text-align:center;color:var(--muted);font-size:.8rem;padding:10px 0 25px}a{color:var(--blue);font-weight:650}hr{border:0;border-top:1px solid var(--line)}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.stats{gap:7px}.stat{padding:10px}.stat strong{font-size:1.1rem}h1{font-size:1.65rem}.card{padding:14px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+ <div class="top"><div class="logo">✨ My Daily Helper</div><div class="badge">Works offline</div></div>
+ <h1>A little help for every day.</h1><p>Plan your day, track your money, save notes, and organize your schoolwork—all in one simple place.</p>
+</div></header>
+<main>
+ <div class="stats">
+  <div class="stat"><small>Tasks left today</small><strong id="taskCount">0</strong></div>
+  <div class="stat"><small>Money in wallet</small><strong id="balanceStat">L$0</strong></div>
+  <div class="stat"><small>Saved notes</small><strong id="noteCount">0</strong></div>
+ </div>
+ <nav class="nav" aria-label="App sections">
+  <button class="active" data-tab="home">🏠 Home</button><button data-tab="tasks">📅 Daily Planner</button><button data-tab="money">💰 Money</button><button data-tab="school">📚 School</button><button data-tab="notes">📝 Notebook</button><button data-tab="helper">🤖 AI Helper</button><button data-tab="earn">💡 Earn</button><button data-tab="settings">⚙️ Settings</button>
+ </nav>
+ <section id="home" class="panel active">
+  <div class="grid">
+   <div class="card"><h2>👋 Welcome!</h2><p class="sub">Start small. Choose one important thing to finish today.</p><div class="tip">Your information is saved on this device. No account is needed. Keep a separate backup of anything important.</div><button class="primary" onclick="showTab('tasks')">Plan my day</button><button class="secondary" id="installBtn" style="display:none">Install app</button></div>
+   <div class="card"><h2>⚡ Quick actions</h2><p class="sub">Jump straight to what you need.</p><button class="secondary" onclick="showTab('money')">Record money in or out</button><br><button class="secondary" onclick="showTab('school')">Create schoolwork</button><br><button class="secondary" onclick="showTab('notes')">Write a note</button></div>
+  </div>
+  <div class="card"><h2>🌱 Simple earning ideas</h2><p class="sub">No betting required. These are ideas, not promises of income.</p><ul><li>Offer tutoring or help younger students study.</li><li>Type, format, or proofread documents for people.</li><li>Prepare simple flyers or social-media designs if you have the skills.</li><li>Sell a useful product or service locally after checking costs.</li><li>Learn a skill for free and make sample work before charging.</li></ul><div class="tip">Avoid apps that ask you to pay a fee to “unlock” earnings, and never share your PIN or verification code.</div></div>
+ </section>
+ <section id="tasks" class="panel">
+  <div class="card"><h2>📅 Daily Planner</h2><p class="sub">Add your tasks and tick them off when finished.</p><form id="taskForm"><label for="taskText">What do you need to do?</label><input id="taskText" required maxlength="160" placeholder="e.g. Prepare tomorrow's lesson"><div class="row"><div><label for="taskDate">Date</label><input id="taskDate" type="date" required></div><div><label for="taskPriority">Priority</label><select id="taskPriority"><option>Normal</option><option>Important</option><option>Urgent</option></select></div></div><button class="primary">Add task</button></form><div id="taskList" class="list"></div></div>
+ </section>
+ <section id="money" class="panel">
+  <div class="grid"><div class="card"><h2>💰 Money Manager</h2><p class="sub">Record amounts in Liberian dollars (L$). This is a personal record, not a bank account.</p><div class="row"><div><small>Money received</small><div class="money good" id="incomeTotal">L$0</div></div><div><small>Money spent</small><div class="money bad" id="expenseTotal">L$0</div></div></div><hr style="border:0;border-top:1px solid var(--line);margin:16px 0"><small>Current balance from your records</small><div class="money" id="balanceTotal">L$0</div></div>
+  <div class="card"><h2>➕ Record transaction</h2><form id="moneyForm"><label for="moneyType">Type</label><select id="moneyType"><option value="in">Money received</option><option value="out">Money spent</option></select><label for="moneyAmount">Amount (L$)</label><input id="moneyAmount" type="number" min="0.01" step="0.01" required placeholder="e.g. 500"><label for="moneyDesc">What was it for?</label><input id="moneyDesc" required maxlength="100" placeholder="e.g. Transport"><button class="primary">Save transaction</button></form></div></div>
+  <div class="card"><h2>Transaction history</h2><div id="moneyList" class="list"></div><button class="danger" id="clearMoney">Clear all transactions</button></div>
+ </section>
+ <section id="school" class="panel">
+  <div class="card"><h2>📚 School Assistant</h2><p class="sub">Organize lessons, assignments, and study plans. Works without internet.</p><form id="schoolForm"><label for="schoolTitle">Title</label><input id="schoolTitle" required placeholder="e.g. Grade 8 Mathematics — Sets"><div class="row"><div><label for="schoolGrade">Class/grade</label><input id="schoolGrade" placeholder="e.g. Grade 8"></div><div><label for="schoolDue">Due date</label><input id="schoolDue" type="date"></div></div><label for="schoolDetails">Details or instructions</label><textarea id="schoolDetails" required placeholder="Write the topic, assignment, or lesson points..."></textarea><button class="primary">Save schoolwork</button></form><div id="schoolList" class="list"></div></div>
+  <div class="tip">For full lesson notes, explanations, worksheets, or answers, use the AI Helper while online and check that schoolwork matches your teacher's instructions and curriculum.</div>
+ </section>
+ <section id="notes" class="panel">
+  <div class="card"><h2>📝 Personal Notebook</h2><p class="sub">Keep ideas, reminders, and important information in one place.</p><form id="noteForm"><label for="noteTitle">Note title</label><input id="noteTitle" required maxlength="100" placeholder="e.g. Things to remember"><label for="noteBody">Your note</label><textarea id="noteBody" required placeholder="Write here..."></textarea><button class="primary">Save note</button></form><div id="noteList" class="list"></div></div>
+ </section>
+ <section id="helper" class="panel">
+  <div class="card"><h2>🤖 AI Helper</h2><p class="sub">Choose what you need help with. This offline starter gives practical prompts; a live AI answer needs an internet-connected AI service.</p><label for="helpType">I need help with...</label><select id="helpType"><option value="daily">A daily problem or decision</option><option value="money">Making a budget or saving</option><option value="school">Schoolwork or teaching notes</option><option value="writing">Writing a message or letter</option><option value="earning">Safe ways to earn money</option><option value="study">Learning a new topic</option></select><label for="helpQuestion">Explain what you need</label><textarea id="helpQuestion" placeholder="Describe your problem in your own words..."></textarea><button class="secondary" id="voiceBtn" type="button">🎤 Speak your question</button> <button class="primary" id="helpBtn">Make a helpful plan</button><div style="margin-top:14px"><div class="chatbox" id="helpAnswer">Your suggested next steps will appear here.</div></div><p class="sub" style="margin-top:12px">For a real AI response, use the secure AI service button below while online. This app does not store an AI password or API key. Never enter passwords, PINs, or private identity details.</p><button class="secondary" id="copyPrompt">Copy my question</button> <button class="primary" id="openAI">Open ChatGPT</button></div>
+ </section>
+
+ <section id="earn" class="panel">
+  <div class="card"><h2>💡 Money-Making Assistant</h2><p class="sub">Explore practical, non-betting ways to earn. These are ideas, not guaranteed income.</p>
+   <div class="tip">Never pay an upfront fee to unlock a job, never share your mobile-money PIN or verification code, and be careful with offers promising guaranteed profit.</div>
+   <h3>Ideas to start locally</h3>
+   <ul><li><b>Tutoring:</b> help younger pupils with reading, maths, English, or computer studies.</li><li><b>Document services:</b> type, format, or proofread letters and assignments.</li><li><b>Design:</b> make simple flyers or social-media posts if you have a phone and the skill.</li><li><b>Small sales:</b> compare costs first and start small with a product people need.</li><li><b>Online freelance work:</b> build samples first and check payment and country eligibility before working.</li></ul>
+   <label for="earnSkill">What skills or tools do you have?</label><textarea id="earnSkill" placeholder="e.g. teaching, typing, smartphone, internet sometimes"></textarea>
+   <label for="earnTime">How much time can you spend?</label><select id="earnTime"><option>1–2 hours a day</option><option>3–4 hours a day</option><option>Weekends only</option><option>Flexible time</option></select>
+   <button class="primary" id="earnPlan">Suggest a starter plan</button><div id="earnResult" class="chatbox" style="margin-top:12px">Your practical starter plan will appear here.</div>
+   <p class="sub">Use these links to research opportunities. Check availability in Liberia and payment methods before signing up.</p>
+   <p><a href="https://www.upwork.com/" target="_blank" rel="noopener">Upwork</a> · <a href="https://www.fiverr.com/" target="_blank" rel="noopener">Fiverr</a> · <a href="https://www.linkedin.com/jobs/" target="_blank" rel="noopener">LinkedIn Jobs</a></p>
+  </div>
+ </section>
+ <section id="settings" class="panel">
+  <div class="card"><h2>⚙️ Settings & Backup</h2><p class="sub">Install the app where supported, allow reminders, or export your saved information.</p>
+   <button class="primary" id="notifyBtn">🔔 Enable reminders</button> <button class="secondary" id="installBtn2">📲 Install app</button>
+   <p id="notifyStatus" class="sub">Reminders depend on your browser/device permission. Keep the app open for in-app due-date checks.</p>
+   <h3>Backup your data</h3><p class="sub">Export a copy before clearing browser data or changing phones.</p><button class="primary" id="exportBtn">Download backup</button><label for="importFile">Restore a backup</label><input id="importFile" type="file" accept="application/json"><button class="secondary" id="importBtn">Restore selected backup</button>
+   <h3>Offline use</h3><p>Tasks, notes, schoolwork, and money records work offline after this page is available on your device. The installable offline shell works best when hosted on HTTPS. Live AI answers and online earning research require internet.</p>
+   <h3>Privacy</h3><p class="sub">Data is stored in this browser on this device. Do not use this app on a shared phone for highly sensitive information. Exported backups may contain your personal notes and money records.</p>
+   <button class="danger" id="clearAll">Delete all app data</button>
+  </div>
+ </section>
+ <div class="foot">My Daily Helper • Simple personal organizer • Data stays in this browser on this device</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const read=(k,def=[])=>{try{return JSON.parse(localStorage.getItem('mdh_'+k))??def}catch{return def}};
+const save=(k,v)=>localStorage.setItem('mdh_'+k,JSON.stringify(v));
+let tasks=read('tasks'), transactions=read('transactions'), notes=read('notes'), school=read('school');
+const today=new Date(); $('taskDate').value=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
+function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function cash(n){return 'L$'+Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2})}
+function updateStats(){ $('taskCount').textContent=tasks.filter(t=>!t.done).length; $('noteCount').textContent=notes.length; $('balanceStat').textContent=cash(transactions.reduce((s,t)=>s+(t.type==='in'?t.amount:-t.amount),0));}
+function renderTasks(){let el=$('taskList');if(!tasks.length){el.innerHTML='<div class="empty">No tasks yet. Add one above.</div>';return}el.innerHTML=tasks.slice().sort((a,b)=>(a.done-b.done)||a.date.localeCompare(b.date)).map(t=>`<div class="item ${t.done?'done':''}"><input type="checkbox" aria-label="Mark task complete" ${t.done?'checked':''} onchange="toggleTask('${t.id}')"><div class="content">${esc(t.text)}<small>${esc(t.date)} • ${esc(t.priority)}</small></div><button class="danger" onclick="deleteTask('${t.id}')">Delete</button></div>`).join('')}
+$('taskForm').addEventListener('submit',e=>{e.preventDefault();tasks.push({id:crypto.randomUUID(),text:$('taskText').value.trim(),date:$('taskDate').value,priority:$('taskPriority').value,done:false});save('tasks',tasks);e.target.reset();$('taskDate').value=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');renderTasks();updateStats()});
+window.toggleTask=id=>{tasks=tasks.map(t=>t.id===id?{...t,done:!t.done}:t);save('tasks',tasks);renderTasks();updateStats()};
+window.deleteTask=id=>{tasks=tasks.filter(t=>t.id!==id);save('tasks',tasks);renderTasks();updateStats()};
+function renderMoney(){let inc=transactions.filter(t=>t.type==='in').reduce((s,t)=>s+t.amount,0),out=transactions.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);$('incomeTotal').textContent=cash(inc);$('expenseTotal').textContent=cash(out);$('balanceTotal').textContent=cash(inc-out);$('balanceTotal').className='money '+(inc-out<0?'bad':'good');$('moneyList').innerHTML=transactions.length?transactions.slice().reverse().map(t=>`<div class="item"><div class="content"><b class="${t.type==='in'?'good':'bad'}">${t.type==='in'?'+':'−'}${cash(t.amount)}</b> — ${esc(t.desc)}<small>${esc(t.date)}</small></div><button class="danger" onclick="deleteTransaction('${t.id}')">Delete</button></div>`).join(''):'<div class="empty">No transactions recorded yet.</div>';updateStats()}
+$('moneyForm').addEventListener('submit',e=>{e.preventDefault();transactions.push({id:crypto.randomUUID(),type:$('moneyType').value,amount:Number($('moneyAmount').value),desc:$('moneyDesc').value.trim(),date:new Date().toLocaleDateString()});save('transactions',transactions);e.target.reset();renderMoney()});
+window.deleteTransaction=id=>{transactions=transactions.filter(t=>t.id!==id);save('transactions',transactions);renderMoney()};
+$('clearMoney').addEventListener('click',()=>{if(confirm('Delete every transaction from this device?')){transactions=[];save('transactions',transactions);renderMoney()}});
+function renderNotes(){ $('noteList').innerHTML=notes.length?notes.slice().reverse().map(n=>`<div class="item"><div class="content"><b>${esc(n.title)}</b><small>${esc(n.date)}</small><div style="white-space:pre-wrap;margin-top:5px">${esc(n.body)}</div></div><button class="danger" onclick="deleteNote('${n.id}')">Delete</button></div>`).join(''):'<div class="empty">No saved notes yet.</div>'}
+$('noteForm').addEventListener('submit',e=>{e.preventDefault();notes.push({id:crypto.randomUUID(),title:$('noteTitle').value.trim(),body:$('noteBody').value.trim(),date:new Date().toLocaleDateString()});save('notes',notes);e.target.reset();renderNotes();updateStats()});
+window.deleteNote=id=>{notes=notes.filter(n=>n.id!==id);save('notes',notes);renderNotes();updateStats()};
+function renderSchool(){$('schoolList').innerHTML=school.length?school.slice().reverse().map(s=>`<div class="item"><div class="content"><b>${esc(s.title)}</b><small>${esc(s.grade||'No grade')} • Due: ${esc(s.due||'Not set')}</small><div style="white-space:pre-wrap;margin-top:5px">${esc(s.details)}</div></div><button class="danger" onclick="deleteSchool('${s.id}')">Delete</button></div>`).join(''):'<div class="empty">No schoolwork saved yet.</div>'}
+$('schoolForm').addEventListener('submit',e=>{e.preventDefault();school.push({id:crypto.randomUUID(),title:$('schoolTitle').value.trim(),grade:$('schoolGrade').value.trim(),due:$('schoolDue').value,details:$('schoolDetails').value.trim()});save('school',school);e.target.reset();renderSchool()});
+window.deleteSchool=id=>{school=school.filter(s=>s.id!==id);save('school',school);renderSchool()};
+function makePlan(){let q=$('helpQuestion').value.trim(),type=$('helpType').value;if(!q){$('helpAnswer').textContent='Please describe your problem first. Even a few sentences are enough.';return}let guides={daily:'1. State the problem clearly.\\n2. Write down two or three possible solutions.\\n3. Compare the cost, time, and risks of each.\\n4. Choose one small, safe next step.\\n5. Review the result and adjust.',money:'1. Write down all money you receive.\\n2. List needs first: food, transport, school, and bills.\\n3. Record every expense in Money Manager.\\n4. Set aside a small amount for savings if possible.\\n5. Avoid borrowing for non-essential spending.',school:'1. Write the class, subject, and exact topic.\\n2. Break the topic into small sections.\\n3. Make short notes and examples.\\n4. Answer practice questions without looking at the notes.\\n5. Check answers and ask your teacher about anything unclear.',writing:'1. Decide who will receive the message.\\n2. Explain your purpose politely and clearly.\\n3. Include the important facts and dates.\\n4. Ask directly for what you need.\\n5. End respectfully and check spelling.',earning:'1. List skills, tools, and time you have.\\n2. Choose a useful service people nearby need.\\n3. Start with a small, honest offer and agree on the price first.\\n4. Keep records of costs and payments.\\n5. Avoid betting, upfront-fee schemes, and promises of guaranteed profit.',study:'1. Write the topic in your own words.\\n2. Learn the meaning of key terms.\\n3. Study one example at a time.\\n4. Practise explaining it without looking.\\n5. Test yourself and revisit difficult parts.'};$('helpAnswer').textContent='Your question: '+q+'\\n\\nA practical starting plan:\\n'+guides[type].replace(/\\\\n/g,'\\n')+'\\n\\nThis is an offline guide, not a live AI-generated answer. For tailored help, copy your question and ask an AI assistant when connected to the internet.'}
+$('helpBtn').addEventListener('click',makePlan);
+$('copyPrompt').addEventListener('click',async()=>{let q=$('helpQuestion').value.trim();if(!q){alert('Write your question first.');return}try{await navigator.clipboard.writeText(q);alert('Question copied. Paste it into an AI assistant when online.')}catch{prompt('Copy your question from here:',q)}});
+renderTasks();renderMoney();renderNotes();renderSchool();updateStats();
+
+// Voice input (uses the browser's speech recognition when supported).
+let recognition=null;
+const voiceButton=$('voiceBtn');
+if(voiceButton){
+ if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+  const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new Speech(); recognition.lang='en-US'; recognition.interimResults=false; recognition.maxAlternatives=1;
+  recognition.onresult=e=>{$('helpQuestion').value += ($('helpQuestion').value?' ':'')+e.results[0][0].transcript};
+  recognition.onerror=()=>alert('Voice input did not work. Please check microphone permission or type your question.');
+  voiceButton.addEventListener('click',()=>{try{recognition.start()}catch(e){alert('Voice input is already listening.')}})
+ } else {voiceButton.addEventListener('click',()=>alert('Voice typing is not supported in this browser. Try your phone keyboard microphone button.'))}
+}
+$('openAI').addEventListener('click',async()=>{
+ const q=$('helpQuestion').value.trim();
+ if(!q){alert('Write or speak your question first.');return}
+ const promptText='Please help me with this request in simple, practical steps. I am using a phone in Liberia. Please be honest about uncertainty and do not assume a service is available unless verified:\\n\\n'+q;
+ try{await navigator.clipboard.writeText(promptText)}catch(e){}
+ window.open('https://chatgpt.com/','_blank','noopener');
+ $('helpAnswer').textContent='ChatGPT has been opened in another tab if your browser allows it. Paste your question there to receive a live AI answer. If it did not copy automatically, use “Copy my question.”';
+});
+$('earnPlan').addEventListener('click',()=>{
+ const skill=$('earnSkill').value.trim()||'general skills and a phone';
+ const time=$('earnTime').value;
+ $('earnResult').textContent='Starter plan based on: '+skill+'\\nAvailable time: '+time+'\\n\\n1. Choose one service you can already do well.\\n2. Create one sample (a lesson page, typed letter, flyer, or tutoring outline).\\n3. Ask 3–5 trusted people or local groups whether they need that service.\\n4. Agree on the price and delivery date before starting.\\n5. Record all costs and payments in Money Manager.\\n6. Do not pay registration fees for a promised job or share your Orange Money/MTN Mobile Money PIN.\\n\\nThis is a starting idea, not a guarantee of earnings.';
+});
+$('notifyBtn').addEventListener('click',async()=>{
+ if(!('Notification' in window)){$('notifyStatus').textContent='This browser does not support notifications. Use your phone alarm/reminders as a backup.';return}
+ try{let p=await Notification.requestPermission();$('notifyStatus').textContent=p==='granted'?'Notifications enabled. Keep this app open to check for tasks due today.':'Permission was not granted. You can still see tasks inside the app.';if(p==='granted')new Notification('My Daily Helper',{body:'Reminders are enabled. Check your tasks for today.'})}catch(e){$('notifyStatus').textContent='Notifications need a supported browser context, often HTTPS. Use your phone reminder app if unavailable.'}
+});
+let installPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('installBtn').style.display='inline-block'});
+async function installApp(){if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null}else alert('To install: host this app on a secure HTTPS website, open it in Chrome, then choose the browser menu and “Add to Home screen.” This downloaded HTML file alone may not show an install prompt.')}
+$('installBtn').addEventListener('click',installApp);$('installBtn2').addEventListener('click',installApp);
+$('exportBtn').addEventListener('click',()=>{
+ const data={app:'My Daily Helper',version:2,exportedAt:new Date().toISOString(),tasks,transactions,notes,school};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='my_daily_helper_backup.json';a.click();URL.revokeObjectURL(url);
+});
+$('importBtn').addEventListener('click',()=>{
+ const f=$('importFile').files[0];if(!f){alert('Choose a backup JSON file first.');return}
+ const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||!Array.isArray(d.tasks)||!Array.isArray(d.transactions)||!Array.isArray(d.notes)||!Array.isArray(d.school))throw Error('invalid');tasks=d.tasks;transactions=d.transactions;notes=d.notes;school=d.school;save('tasks',tasks);save('transactions',transactions);save('notes',notes);save('school',school);renderTasks();renderMoney();renderNotes();renderSchool();updateStats();alert('Backup restored.')}catch(e){alert('That file does not look like a valid My Daily Helper backup.')}};r.readAsText(f);
+});
+$('clearAll').addEventListener('click',()=>{if(confirm('Delete ALL tasks, money records, notes, and schoolwork saved by this app on this device? Export a backup first if needed.')){tasks=[];transactions=[];notes=[];school=[];save('tasks',tasks);save('transactions',transactions);save('notes',notes);save('school',school);renderTasks();renderMoney();renderNotes();renderSchool();updateStats();alert('App data cleared.')}});
+function checkDueTasks(){
+ if(!('Notification' in window)||Notification.permission!=='granted')return;
+ const todayStr=[new Date().getFullYear(),String(new Date().getMonth()+1).padStart(2,'0'),String(new Date().getDate()).padStart(2,'0')].join('-');
+ const due=tasks.filter(t=>!t.done&&t.date===todayStr);
+ const dayKey='mdh_notified_'+todayStr;
+ if(due.length&&!sessionStorage.getItem(dayKey)){new Notification('My Daily Helper',{body:'You have '+due.length+' task(s) due today. Open your planner to review them.'});sessionStorage.setItem(dayKey,'1')}
+}
+checkDueTasks();setInterval(checkDueTasks,60000);
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+}
+
+</script>
+</body>
+</html>
